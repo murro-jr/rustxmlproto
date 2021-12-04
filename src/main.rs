@@ -18,8 +18,12 @@ fn main() {
     let file = File::open(&args[1][..]).expect("The system cannot find the file specified.");
     let reader = BufReader::new(file);
 
-    let prototype: Prototype = from_reader(reader).unwrap();
-    println!("{:?}", prototype);
+    let prototype: Result<Prototype, _> = from_reader(reader).map_err(|err| {
+        println!("Error: {}", err);
+    });
 
-    ObjectWriter::write(prototype).unwrap();
+    if let Ok(prototype) = prototype {
+        println!("{:?}", prototype);
+        ObjectWriter::write(prototype).unwrap();
+    }
 }

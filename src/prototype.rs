@@ -22,15 +22,47 @@ impl std::str::FromStr for ObjectType {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-struct Function {
-    #[serde(skip_serializing)]
-    name: String,
+pub(crate) struct Parameter {
+    pub(crate) name: String,
+
+    #[serde(skip_deserializing)]
+    pub(crate) datatype: String,
+}
+
+fn deserialize_parameters<'de, T>(t: T) -> Result<Option<Vec<Parameter>>, T::Error>
+where
+    T: serde::Deserializer<'de>,
+{
+    let parameters: HashMap<String, Parameter> = serde::Deserialize::deserialize(t)?;
+    let parameters: Vec<Parameter> = parameters
+        .into_iter()
+        .map(|(datatype, item)| Parameter {
+            name: item.name,
+            datatype: datatype,
+        })
+        .collect();
+    Ok(Some(parameters))
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+pub(crate) struct Function {
+    #[serde(skip_deserializing)]
+    pub(crate) name: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    return_type: Option<String>,
+    pub(crate) visibility: Option<String>,
+
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_parameters"
+    )]
+    pub(crate) parameters: Option<Vec<Parameter>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    is_async: Option<bool>,
+    pub(crate) return_type: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) is_async: Option<bool>,
 }
 
 fn deserialize_functions<'de, T>(t: T) -> Result<Vec<Function>, T::Error>
@@ -42,6 +74,8 @@ where
         .into_iter()
         .map(|(name, item)| Function {
             name: name,
+            visibility: item.visibility,
+            parameters: item.parameters,
             return_type: item.return_type,
             is_async: item.is_async,
         })
@@ -76,14 +110,14 @@ where
     Ok(members)
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Default)]
 pub(crate) struct Prototype {
     pub(crate) name: String,
     pub(crate) class: String,
     pub(crate) visibility: Option<String>,
 
     #[serde(deserialize_with = "deserialize_functions")]
-    functions: Vec<Function>,
+    pub(crate) functions: Vec<Function>,
 
     #[serde(deserialize_with = "deserialize_members")]
     pub(crate) members: Vec<Member>,

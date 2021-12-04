@@ -2,9 +2,9 @@ use convert_case::{Case, Casing};
 use std::fs::File;
 use std::io::Write;
 
-use crate::prototype::{Member, ObjectType, Prototype};
+use crate::prototype::{Function, Member, ObjectType, Prototype};
 
-pub(crate) struct EnumFormatter;
+struct EnumFormatter;
 
 impl EnumFormatter {
     pub fn format(members: Vec<Member>) -> String {
@@ -31,7 +31,7 @@ impl EnumFormatter {
     }
 }
 
-pub(crate) struct StructFormatter;
+struct StructFormatter;
 
 impl StructFormatter {
     pub fn format(members: Vec<Member>) -> String {
@@ -50,6 +50,54 @@ impl StructFormatter {
             } else {
                 panic!("Data type is unknown or undefined.");
             }
+        }
+
+        result
+    }
+}
+
+struct FunctionFormatter;
+
+impl FunctionFormatter {
+    pub fn format(function: &Function) -> String {
+        let mut result = "".to_string();
+
+        if let Some(visibility) = &function.visibility {
+            result = result + &format!("pub({}) ", visibility);
+        }
+
+        if let Some(is_async) = &function.is_async {
+            if *is_async {
+                result = result + "async ";
+            }
+        }
+
+        result = result + &format!("fn {} (self, ", &function.name);
+
+        if let Some(parameters) = &function.parameters {
+            for param in parameters.iter() {
+                result = result + &format!("{}: {}, ", param.name, param.datatype);
+            }
+        }
+
+        result = result + ")";
+
+        if let Some(return_type) = &function.return_type {
+            result = result + &format!(" -> {};", return_type);
+        }
+
+        result
+    }
+}
+
+struct TraitFormatter;
+
+impl TraitFormatter {
+    pub fn format(functions: Vec<Function>) -> String {
+        let mut result = "".to_string();
+
+        for function in functions.iter() {
+            result = result + "\t" + &FunctionFormatter::format(function) + "\n";
         }
 
         result
@@ -89,6 +137,11 @@ impl ObjectWriter {
             }
             Ok(ObjectType::STRUCT) => {
                 let mut members = StructFormatter::format(prototype.members);
+                members = members + "}";
+                file.write(members.as_bytes())?;
+            }
+            Ok(ObjectType::TRAIT) => {
+                let mut members = TraitFormatter::format(prototype.functions);
                 members = members + "}";
                 file.write(members.as_bytes())?;
             }
