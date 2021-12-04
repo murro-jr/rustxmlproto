@@ -5,8 +5,8 @@ use serde_xml_rs::de::from_reader;
 use std::fs::File;
 use std::io::BufReader;
 
-use crate::prototype::Prototype;
 use crate::objectwriter::ObjectWriter;
+use crate::prototype::Prototype;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
