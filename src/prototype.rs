@@ -54,6 +54,7 @@ pub(crate) struct Function {
 
     #[serde(
         skip_serializing_if = "Option::is_none",
+        default,
         deserialize_with = "deserialize_parameters"
     )]
     pub(crate) parameters: Option<Vec<Parameter>>,
@@ -116,9 +117,9 @@ pub(crate) struct Prototype {
     pub(crate) class: String,
     pub(crate) visibility: Option<String>,
 
-    #[serde(deserialize_with = "deserialize_functions")]
+    #[serde(default, deserialize_with = "deserialize_functions")]
     pub(crate) functions: Vec<Function>,
 
-    #[serde(deserialize_with = "deserialize_members")]
+    #[serde(default, deserialize_with = "deserialize_members")]
     pub(crate) members: Vec<Member>,
 }
