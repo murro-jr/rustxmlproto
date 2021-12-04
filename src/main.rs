@@ -1,15 +1,20 @@
 mod prototype;
 
 use crate::prototype::Prototype;
-use serde_xml_rs::{from_str, to_string};
+use serde_xml_rs::de::from_reader;
+use std::fs::File;
+use std::io::BufReader;
 
 fn main() {
-    let src = r#"<Prototype>
-                    <name>TestProto</name>
-                    <class>enum</class>
-                    <functions></functions>
-                </Prototype>"#;
+    let args: Vec<String> = std::env::args().collect();
 
-    let prototype: Prototype = from_str(src).unwrap();
+    if args.len() < 2 {
+        panic!("File path of the xml not found or provided.");
+    }
+
+    let file = File::open(&args[1][..]).expect("The system cannot find the file specified.");
+    let reader = BufReader::new(file);
+
+    let prototype: Prototype = from_reader(reader).unwrap();
     println!("{:?}", prototype)
 }
