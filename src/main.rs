@@ -1,3 +1,4 @@
+mod formatter;
 mod objectwriter;
 mod prototype;
 
