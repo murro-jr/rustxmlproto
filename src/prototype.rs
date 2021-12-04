@@ -23,9 +23,8 @@ impl std::str::FromStr for ObjectType {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub(crate) struct Parameter {
-    pub(crate) name: String,
-
     #[serde(skip_deserializing)]
+    pub(crate) name: String,
     pub(crate) datatype: String,
 }
 
@@ -36,9 +35,9 @@ where
     let parameters: HashMap<String, Parameter> = serde::Deserialize::deserialize(t)?;
     let parameters: Vec<Parameter> = parameters
         .into_iter()
-        .map(|(datatype, item)| Parameter {
-            name: item.name,
-            datatype: datatype,
+        .map(|(name, item)| Parameter {
+            name: name,
+            datatype: item.datatype,
         })
         .collect();
     Ok(Some(parameters))
