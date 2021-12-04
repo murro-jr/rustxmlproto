@@ -32,10 +32,10 @@ where
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub(crate) struct Prototype {
-    name: String,
-    class: String,
+    pub(crate) name: String,
+    pub(crate) class: String,
+    pub(crate) visibility: Option<String>,
 
     #[serde(deserialize_with = "deserialize_functions")]
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     functions: Vec<Function>,
 }

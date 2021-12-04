@@ -1,9 +1,12 @@
+mod objectwriter;
 mod prototype;
 
-use crate::prototype::Prototype;
 use serde_xml_rs::de::from_reader;
 use std::fs::File;
 use std::io::BufReader;
+
+use crate::prototype::Prototype;
+use crate::objectwriter::ObjectWriter;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -16,5 +19,7 @@ fn main() {
     let reader = BufReader::new(file);
 
     let prototype: Prototype = from_reader(reader).unwrap();
-    println!("{:?}", prototype)
+    println!("{:?}", prototype);
+
+    ObjectWriter::write(prototype).unwrap();
 }
