@@ -1,5 +1,6 @@
 mod formatter;
 mod objectwriter;
+mod preface;
 mod prototype;
 mod value;
 
@@ -10,6 +11,7 @@ use std::fs::File;
 use std::io::BufReader;
 
 use crate::objectwriter::ObjectWriter;
+use crate::preface::Preface;
 use crate::prototype::Prototype;
 
 fn main() {
@@ -28,6 +30,7 @@ fn main() {
 
     if let Ok(prototype) = prototype {
         println!("{:?}", prototype);
+        let prototype = Preface::new(prototype).prepare();
         ObjectWriter::write(prototype).unwrap();
     }
 }

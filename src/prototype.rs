@@ -34,7 +34,7 @@ pub(crate) struct Function {
     pub(crate) is_async: Option<bool>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub(crate) struct Member {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) datatype: Option<String>,
