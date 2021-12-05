@@ -2,6 +2,8 @@ mod formatter;
 mod objectwriter;
 mod prototype;
 
+extern crate proto_derive;
+
 use serde_xml_rs::de::from_reader;
 use std::fs::File;
 use std::io::BufReader;
