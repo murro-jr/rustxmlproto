@@ -56,7 +56,7 @@ impl StructFormatter {
 pub(crate) struct FunctionFormatter;
 
 impl FunctionFormatter {
-    pub fn format(function: &Function) -> String {
+    pub fn format_header(function: &Function) -> String {
         let mut result = "".to_string();
 
         if let Some(visibility) = &function.visibility {
@@ -91,6 +91,16 @@ impl FunctionFormatter {
 
         result
     }
+
+    pub fn format_body(function: &Function) -> String {
+        let mut result = "".to_string();
+
+        if let Some(body) = &function.body {
+            result = result + &body[..];
+        }
+
+        result
+    }
 }
 
 pub(crate) struct TraitFormatter;
@@ -100,9 +110,25 @@ impl TraitFormatter {
         let mut result = "".to_string();
 
         for function in functions.iter() {
-            result = result + "\t" + &FunctionFormatter::format(function) + ";\n";
+            result = result + "\t" + &FunctionFormatter::format_header(function) + ";\n";
         }
 
+        result
+    }
+}
+
+pub(crate) struct ImplFormatter;
+
+impl ImplFormatter {
+    pub fn format(name: String, functions: Vec<Function>) -> String {
+        let mut result = format!("impl {} {{\n", name);
+
+        for function in functions.iter() {
+            result = result + "\t" + &FunctionFormatter::format_header(function) + " {\n";
+            result = result + "\t\t" + &FunctionFormatter::format_body(function) + "\n\t}\n";
+        }
+
+        result = result + "}";
         result
     }
 }

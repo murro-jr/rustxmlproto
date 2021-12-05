@@ -2,7 +2,7 @@ use convert_case::{Case, Casing};
 use std::fs::File;
 use std::io::Write;
 
-use crate::formatter::{EnumFormatter, StructFormatter, TraitFormatter};
+use crate::formatter::{EnumFormatter, ImplFormatter, StructFormatter, TraitFormatter};
 use crate::prototype::{ObjectType, Prototype};
 
 pub(crate) struct ObjectWriter;
@@ -37,9 +37,11 @@ impl ObjectWriter {
                 file.write(members.as_bytes())?;
             }
             Ok(ObjectType::STRUCT) => {
-                let mut members = StructFormatter::format(prototype.members.0);
-                members = members + "}";
-                file.write(members.as_bytes())?;
+                let mut output = StructFormatter::format(prototype.members.0);
+                output = output + "}";
+                output =
+                    output + "\n\n" + &ImplFormatter::format(prototype.name, prototype.functions.0);
+                file.write(output.as_bytes())?;
             }
             Ok(ObjectType::TRAIT) => {
                 let mut functions = TraitFormatter::format(prototype.functions.0);

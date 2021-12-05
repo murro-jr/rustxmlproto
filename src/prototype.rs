@@ -47,6 +47,9 @@ pub(crate) struct Function {
     pub(crate) datatype: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) body: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) is_async: Option<bool>,
 }
 
