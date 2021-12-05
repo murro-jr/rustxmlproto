@@ -72,15 +72,21 @@ impl FunctionFormatter {
         result = result + &format!("fn {} (self, ", &function.name);
 
         if let Some(parameters) = &function.parameters {
-            for param in parameters.iter() {
-                result = result + &format!("{}: {}, ", param.name, param.datatype);
+            for param in parameters.0.iter() {
+                let default_type = "T".to_string();
+                result = result
+                    + &format!(
+                        "{}: {}, ",
+                        param.name,
+                        param.datatype.as_ref().unwrap_or(&default_type)
+                    );
             }
         }
 
         result = result + ")";
 
-        if let Some(return_type) = &function.return_type {
-            result = result + &format!(" -> {}", return_type);
+        if let Some(datatype) = &function.datatype {
+            result = result + &format!(" -> {}", datatype);
         }
 
         result

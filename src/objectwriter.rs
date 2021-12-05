@@ -32,21 +32,21 @@ impl ObjectWriter {
 
         match object_type {
             Ok(ObjectType::ENUM) => {
-                let mut members = EnumFormatter::format(prototype.members);
+                let mut members = EnumFormatter::format(prototype.members.0);
                 members = members + "}";
                 file.write(members.as_bytes())?;
             }
             Ok(ObjectType::STRUCT) => {
-                let mut members = StructFormatter::format(prototype.members);
+                let mut members = StructFormatter::format(prototype.members.0);
                 members = members + "}";
                 file.write(members.as_bytes())?;
             }
             Ok(ObjectType::TRAIT) => {
-                let mut members = TraitFormatter::format(prototype.functions);
-                members = members + "}";
-                file.write(members.as_bytes())?;
+                let mut functions = TraitFormatter::format(prototype.functions.0);
+                functions = functions + "}";
+                file.write(functions.as_bytes())?;
             }
-            _ => {}
+            Err(err) => panic!("Error parsing ObjectType: {}", err),
         };
 
         Ok(())
