@@ -3,7 +3,8 @@ use std::fs::File;
 use std::io::Write;
 
 use crate::formatter::{EnumFormatter, ImplFormatter, StructFormatter, TraitFormatter};
-use crate::prototype::{ObjectType, Prototype};
+use crate::prototype::Prototype;
+use crate::value::{ObjectType, Visibility};
 
 pub(crate) struct ObjectWriter;
 
@@ -15,10 +16,25 @@ impl ObjectWriter {
         match prototype.visibility {
             Some(visibility) => {
                 //Create an object based on visibility
-                let object = format!(
-                    "pub({}) {} {} {{\n",
-                    visibility, prototype.class, prototype.name
-                );
+                let visibility: Visibility = visibility.parse().unwrap();
+
+                let object = match visibility {
+                    Visibility::MODULE | Visibility::CRATE => {
+                        format!(
+                            "pub({}) {} {} {{\n",
+                            visibility.to_string(),
+                            prototype.class,
+                            prototype.name
+                        )
+                    }
+                    Visibility::EXTERNAL => {
+                        format!("pub {} {} {{\n", prototype.class, prototype.name)
+                    }
+                    Visibility::PRIVATE => {
+                        format!("{} {} {{\n", prototype.class, prototype.name)
+                    }
+                };
+
                 file.write(object.as_bytes())?;
             }
             None => {

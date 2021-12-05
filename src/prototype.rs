@@ -3,25 +3,6 @@ use serde_derive::{Deserialize, Serialize};
 
 use proto_derive::ProtoDeserializer;
 
-pub(crate) enum ObjectType {
-    STRUCT,
-    TRAIT,
-    ENUM,
-}
-
-impl std::str::FromStr for ObjectType {
-    type Err = String;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "struct" => Ok(ObjectType::STRUCT),
-            "trait" => Ok(ObjectType::TRAIT),
-            "enum" => Ok(ObjectType::ENUM),
-            _ => Err(format!("'{}' is not a valid value for ObjectType", value)),
-        }
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub(crate) struct Parameter {
     pub(crate) name: String,

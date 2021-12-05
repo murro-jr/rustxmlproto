@@ -1,6 +1,7 @@
 mod formatter;
 mod objectwriter;
 mod prototype;
+mod value;
 
 extern crate proto_derive;
 

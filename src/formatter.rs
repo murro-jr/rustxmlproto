@@ -1,5 +1,7 @@
-use crate::prototype::{Function, Member};
 use convert_case::{Case, Casing};
+
+use crate::prototype::{Function, Member};
+use crate::value::Visibility;
 
 pub(crate) struct EnumFormatter;
 
@@ -38,7 +40,24 @@ impl StructFormatter {
             if let Some(datatype) = &member.datatype {
                 let member = match &member.visibility {
                     Some(visibility) => {
-                        format!("\tpub({}) {}: {},\n", visibility, member.name, datatype)
+                        let visibility: Visibility = visibility.parse().unwrap();
+
+                        match visibility {
+                            Visibility::MODULE | Visibility::CRATE => {
+                                format!(
+                                    "\tpub({}) {}: {},\n",
+                                    visibility.to_string(),
+                                    member.name,
+                                    datatype
+                                )
+                            }
+                            Visibility::EXTERNAL => {
+                                format!("\tpub {}: {},\n", member.name, datatype)
+                            }
+                            Visibility::PRIVATE => {
+                                format!("\t{}: {},\n", member.name, datatype)
+                            }
+                        }
                     }
                     None => format!("\t{}: {},\n", member.name, datatype),
                 };
@@ -60,7 +79,19 @@ impl FunctionFormatter {
         let mut result = "".to_string();
 
         if let Some(visibility) = &function.visibility {
-            result = result + &format!("pub({}) ", visibility);
+            let visibility: Visibility = visibility.parse().unwrap();
+
+            match visibility {
+                Visibility::MODULE | Visibility::CRATE => {
+                    result = result + &format!("pub({}) ", visibility.to_string());
+                }
+                Visibility::EXTERNAL => {
+                    result = result + "pub ";
+                }
+                Visibility::PRIVATE => {
+                    println!("There is nothing to do here.");
+                }
+            };
         }
 
         if let Some(is_async) = &function.is_async {
