@@ -1,6 +1,9 @@
+use convert_case::{Case, Casing};
+
 use crate::prototype::{Function, Member, Parameter, Parameters, Prototype};
 use crate::value::ObjectType;
 
+#[derive(Clone)]
 struct StructPreface {
     members: Vec<Member>,
 }
@@ -35,9 +38,28 @@ impl StructPreface {
         }
     }
 
-    fn setters(self) -> Result<Vec<Function>, String> {
-        //TODO: add the setter methods and collect into vector of function
-        Ok(Vec::new())
+    fn setters(self) -> Vec<Function> {
+        let mut functions: Vec<Function> = Vec::new();
+
+        for member in self.members.iter() {
+            let name = format!("set_{}", member.name.to_case(Case::Snake));
+            let parameters: Vec<Parameter> = vec![Parameter {
+                name: member.name.clone(),
+                datatype: member.datatype.clone(),
+            }];
+            let body = format!("self.{} = {};", member.name, member.name);
+
+            functions.push(Function {
+                name,
+                datatype: None,
+                parameters: Some(Parameters(parameters)),
+                body: Some(body),
+                visibility: Some("crate".to_string()),
+                is_async: Some(false),
+            })
+        }
+
+        functions
     }
 
     fn getters(self) -> Result<Vec<Function>, String> {
@@ -60,8 +82,13 @@ impl Preface {
             Ok(ObjectType::STRUCT) => {
                 // Add the constructor method
                 let members = &self.prototype.members.0;
-                let constructor = StructPreface::new(members.to_vec()).constructor();
-                self.prototype.functions.0.push(constructor)
+                let preface = StructPreface::new(members.to_vec());
+
+                let constructor = preface.clone().constructor();
+                self.prototype.functions.0.push(constructor);
+
+                let setters = preface.setters();
+                self.prototype.functions.0.extend(setters);
             }
             _ => println!("We do nothing here yet."),
         };
