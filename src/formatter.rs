@@ -1,6 +1,6 @@
 use convert_case::{Case, Casing};
 
-use crate::prototype::{Function, Member};
+use crate::prototype::{Function, Include, Member};
 use crate::value::Visibility;
 
 pub(crate) struct EnumFormatter;
@@ -167,6 +167,36 @@ impl ImplFormatter {
         }
 
         result = result + "}";
+        result
+    }
+}
+
+pub(crate) struct IncludeFormatter;
+
+impl IncludeFormatter {
+    pub fn format(includes: Vec<Include>) -> String {
+        let mut result = "".to_string();
+
+        for include in includes.iter() {
+            let class = match &include.class[..] {
+                "within" => "crate::",
+                "extern" => "",
+                _ => panic!("Include class declaration not supported."),
+            };
+
+            result = result + &format!("use {}{}", class, include.name);
+
+            if let Some(scope) = &include.scope {
+                if &scope[..] == "all" {
+                    result = result + "::*;\n";
+                }
+            } else if let Some(objects) = &include.objects {
+                result = result + "::{ " + &objects + " };\n";
+            } else {
+                result = result + ";\n";
+            }
+        }
+
         result
     }
 }

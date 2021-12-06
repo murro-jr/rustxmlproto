@@ -2,7 +2,9 @@ use convert_case::{Case, Casing};
 use std::fs::File;
 use std::io::Write;
 
-use crate::formatter::{EnumFormatter, ImplFormatter, StructFormatter, TraitFormatter};
+use crate::formatter::{
+    EnumFormatter, ImplFormatter, IncludeFormatter, StructFormatter, TraitFormatter,
+};
 use crate::prototype::Prototype;
 use crate::value::{ObjectType, Visibility};
 
@@ -12,6 +14,9 @@ impl ObjectWriter {
     pub fn write(prototype: Prototype) -> std::io::Result<()> {
         let path = format!("./{}.rs", prototype.name.to_case(Case::Snake));
         let mut file = File::create(path)?;
+
+        let includes = IncludeFormatter::format(prototype.includes.0) + "\n";
+        file.write(includes.as_bytes())?;
 
         match prototype.visibility {
             Some(visibility) => {
