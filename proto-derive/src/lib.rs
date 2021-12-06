@@ -7,9 +7,28 @@ extern crate quote;
 
 use proc_macro::TokenStream;
 
+const PARAMETERS: &str = "Parameters";
+const FUNCTIONS: &str = "Functions";
+const MEMBERS: &str = "Members";
+const INCLUDES: &str = "Includes";
+
 fn impl_proto_deserialize(ast: &syn::DeriveInput) -> quote::Tokens {
     let name = &ast.ident;
     let param = get_vector_input(&name.to_string());
+
+    let condition = if &name.to_string() != INCLUDES {
+        quote! {
+            if key != "generic" {
+                value.datatype = Some(key);
+            } else {
+                value.datatype = None;
+            }
+        }
+    } else {
+        quote! {
+            value.class = key;
+        }
+    };
 
     quote! {
         impl<'de> serde::Deserialize<'de> for #name {
@@ -34,11 +53,7 @@ fn impl_proto_deserialize(ast: &syn::DeriveInput) -> quote::Tokens {
                         let mut params: Self::Value = Vec::new();
 
                         while let Some((key, mut value)) = access.next_entry::<String, #param>()? {
-                            if key != "generic" {
-                                value.datatype = Some(key);
-                            } else {
-                                value.datatype = None;
-                            }
+                            #condition
                             params.push(value);
                         }
 
@@ -58,15 +73,12 @@ fn impl_proto_deserialize(ast: &syn::DeriveInput) -> quote::Tokens {
     }
 }
 
-const PARAMETERS: &str = "Parameters";
-const FUNCTIONS: &str = "Functions";
-const MEMBERS: &str = "Members";
-
 fn get_vector_input(class: &String) -> syn::Ident {
     match &class[..] {
         PARAMETERS => syn::Ident::from("Parameter"),
         FUNCTIONS => syn::Ident::from("Function"),
         MEMBERS => syn::Ident::from("Member"),
+        INCLUDES => syn::Ident::from("Include"),
         _ => syn::Ident::from(""),
     }
 }
