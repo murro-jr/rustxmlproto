@@ -43,10 +43,17 @@ impl StructPreface {
 
         for member in self.members.iter() {
             let name = format!("set_{}", member.name.to_case(Case::Snake));
-            let parameters: Vec<Parameter> = vec![Parameter {
-                name: member.name.clone(),
-                datatype: member.datatype.clone(),
-            }];
+            let parameters: Vec<Parameter> = vec![
+                Parameter {
+                    name: "self".to_string(),
+                    datatype: None,
+                },
+                Parameter {
+                    name: member.name.clone(),
+                    datatype: member.datatype.clone(),
+                },
+            ];
+
             let body = format!("self.{} = {};", member.name, member.name);
 
             functions.push(Function {
@@ -68,11 +75,15 @@ impl StructPreface {
         for member in self.members.iter() {
             let name = format!("get_{}", member.name.to_case(Case::Snake));
             let body = format!("self.{}", member.name);
+            let parameters: Vec<Parameter> = vec![Parameter {
+                name: "self".to_string(),
+                datatype: None,
+            }];
 
             functions.push(Function {
                 name,
                 datatype: member.datatype.clone(),
-                parameters: None,
+                parameters: Some(Parameters(parameters)),
                 body: Some(body),
                 visibility: Some("crate".to_string()),
                 is_async: Some(false),
