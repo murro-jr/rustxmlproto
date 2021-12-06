@@ -3,7 +3,7 @@ use serde_derive::{Deserialize, Serialize};
 
 use proto_derive::ProtoDeserializer;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub(crate) struct Parameter {
     pub(crate) name: String,
 
@@ -14,10 +14,10 @@ pub(crate) struct Parameter {
     pub(crate) mutable: Option<bool>,
 }
 
-#[derive(Debug, Serialize, ProtoDeserializer)]
+#[derive(Debug, Serialize, ProtoDeserializer, Clone)]
 pub(crate) struct Parameters(pub(crate) Vec<Parameter>);
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub(crate) struct Function {
     pub(crate) name: String,
 

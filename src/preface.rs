@@ -98,6 +98,37 @@ impl StructPreface {
     }
 }
 
+struct TraitPreface;
+
+impl TraitPreface {
+    fn prepend_self(functions: Vec<Function>) -> Vec<Function> {
+        let mut new_functions: Vec<Function> = Vec::new();
+
+        for function in functions.iter() {
+            let mut parameters: Vec<Parameter> = vec![Parameter {
+                name: "self".to_string(),
+                datatype: None,
+                mutable: Some(false),
+            }];
+
+            if let Some(params) = &function.parameters {
+                parameters.extend(params.0.clone());
+            }
+
+            new_functions.push(Function {
+                name: function.name.clone(),
+                datatype: function.datatype.clone(),
+                parameters: Some(Parameters(parameters)),
+                body: function.body.clone(),
+                visibility: function.visibility.clone(),
+                is_async: function.is_async,
+            });
+        }
+
+        new_functions
+    }
+}
+
 pub(crate) struct Preface {
     prototype: Prototype,
 }
@@ -110,21 +141,28 @@ impl Preface {
     pub(crate) fn prepare(mut self) -> Prototype {
         match self.prototype.class.parse::<ObjectType>() {
             Ok(ObjectType::STRUCT) => {
-                // Add the constructor method
                 let mut functions: Vec<Function> = Vec::new();
                 let members = &self.prototype.members.0;
                 let preface = StructPreface::new(members.to_vec());
 
+                // Add the constructor method
                 let constructor = preface.clone().constructor();
                 functions.push(constructor);
 
+                // Add the setter methods
                 let setters = preface.clone().setters();
                 functions.extend(setters);
 
+                // Add the getter methods
                 let getters = preface.getters();
                 functions.extend(getters);
 
                 functions.extend(self.prototype.functions.0);
+                self.prototype.functions.0 = functions;
+            }
+            Ok(ObjectType::TRAIT) => {
+                let functions = &self.prototype.functions.0;
+                let functions = TraitPreface::prepend_self(functions.to_vec());
                 self.prototype.functions.0 = functions;
             }
             _ => println!("We do nothing here yet."),
