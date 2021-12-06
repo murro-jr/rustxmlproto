@@ -111,17 +111,21 @@ impl Preface {
         match self.prototype.class.parse::<ObjectType>() {
             Ok(ObjectType::STRUCT) => {
                 // Add the constructor method
+                let mut functions: Vec<Function> = Vec::new();
                 let members = &self.prototype.members.0;
                 let preface = StructPreface::new(members.to_vec());
 
                 let constructor = preface.clone().constructor();
-                self.prototype.functions.0.push(constructor);
+                functions.push(constructor);
 
                 let setters = preface.clone().setters();
-                self.prototype.functions.0.extend(setters);
+                functions.extend(setters);
 
                 let getters = preface.getters();
-                self.prototype.functions.0.extend(getters);
+                functions.extend(getters);
+
+                functions.extend(self.prototype.functions.0);
+                self.prototype.functions.0 = functions;
             }
             _ => println!("We do nothing here yet."),
         };
