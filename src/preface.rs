@@ -62,9 +62,24 @@ impl StructPreface {
         functions
     }
 
-    fn getters(self) -> Result<Vec<Function>, String> {
-        //TODO: add the getter methods and collect into vector of function
-        Ok(Vec::new())
+    fn getters(self) -> Vec<Function> {
+        let mut functions: Vec<Function> = Vec::new();
+
+        for member in self.members.iter() {
+            let name = format!("get_{}", member.name.to_case(Case::Snake));
+            let body = format!("self.{}", member.name);
+
+            functions.push(Function {
+                name,
+                datatype: member.datatype.clone(),
+                parameters: None,
+                body: Some(body),
+                visibility: Some("crate".to_string()),
+                is_async: Some(false),
+            })
+        }
+
+        functions
     }
 }
 
@@ -87,8 +102,11 @@ impl Preface {
                 let constructor = preface.clone().constructor();
                 self.prototype.functions.0.push(constructor);
 
-                let setters = preface.setters();
+                let setters = preface.clone().setters();
                 self.prototype.functions.0.extend(setters);
+
+                let getters = preface.getters();
+                self.prototype.functions.0.extend(getters);
             }
             _ => println!("We do nothing here yet."),
         };
