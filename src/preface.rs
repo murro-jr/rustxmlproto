@@ -23,6 +23,7 @@ impl StructPreface {
             parameters.push(Parameter {
                 name: member.name.clone(),
                 datatype: member.datatype.clone(),
+                mutable: Some(false),
             });
         }
 
@@ -47,10 +48,12 @@ impl StructPreface {
                 Parameter {
                     name: "self".to_string(),
                     datatype: None,
+                    mutable: Some(true),
                 },
                 Parameter {
                     name: member.name.clone(),
                     datatype: member.datatype.clone(),
+                    mutable: Some(false),
                 },
             ];
 
@@ -78,6 +81,7 @@ impl StructPreface {
             let parameters: Vec<Parameter> = vec![Parameter {
                 name: "self".to_string(),
                 datatype: None,
+                mutable: Some(false),
             }];
 
             functions.push(Function {

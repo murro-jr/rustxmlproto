@@ -104,13 +104,18 @@ impl FunctionFormatter {
 
         if let Some(parameters) = &function.parameters {
             for param in parameters.0.iter() {
+                let mutable = match &param.mutable {
+                    Some(true) => "mut ",
+                    _ => "",
+                };
+
                 if let Some(datatype) = &param.datatype {
-                    result = result + &format!("{}: {}, ", param.name, datatype);
+                    result = result + &format!("{}: {}{}, ", param.name, mutable, datatype);
                 } else {
                     if &param.name != "self" {
-                        result = result + &format!("{}: T, ", param.name);
+                        result = result + &format!("{}: {}T, ", param.name, mutable);
                     } else {
-                        result = result + "self, ";
+                        result = result + &format!("{}self, ", mutable);
                     }
                 }
             }

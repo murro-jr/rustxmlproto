@@ -9,6 +9,9 @@ pub(crate) struct Parameter {
 
     #[serde(skip_deserializing)]
     pub(crate) datatype: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) mutable: Option<bool>,
 }
 
 #[derive(Debug, Serialize, ProtoDeserializer)]
