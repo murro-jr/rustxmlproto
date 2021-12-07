@@ -158,8 +158,12 @@ impl TraitFormatter {
 pub(crate) struct ImplFormatter;
 
 impl ImplFormatter {
-    pub fn format(name: String, functions: Vec<Function>) -> String {
-        let mut result = format!("impl {} {{\n", name);
+    pub fn format(name: String, functions: Vec<Function>, inherits_to: Option<String>) -> String {
+        let mut result = if let Some(inherits_to) = inherits_to {
+            format!("impl {} for {} {{\n", name, inherits_to)
+        } else {
+            format!("impl {} {{\n", name)
+        };
 
         for function in functions.iter() {
             result = result + "\t" + &FunctionFormatter::format_header(function) + " {\n";

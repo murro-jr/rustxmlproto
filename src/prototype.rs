@@ -48,10 +48,10 @@ pub(crate) struct Member {
     pub(crate) visibility: Option<String>,
 }
 
-#[derive(Debug, Serialize, ProtoDeserializer)]
+#[derive(Debug, Serialize, ProtoDeserializer, Clone)]
 pub(crate) struct Functions(pub(crate) Vec<Function>);
 
-#[derive(Debug, Serialize, ProtoDeserializer)]
+#[derive(Debug, Serialize, ProtoDeserializer, Clone)]
 pub(crate) struct Members(pub(crate) Vec<Member>);
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -67,7 +67,7 @@ pub(crate) struct Include {
     pub(crate) objects: Option<String>,
 }
 
-#[derive(Debug, Serialize, ProtoDeserializer)]
+#[derive(Debug, Serialize, ProtoDeserializer, Clone)]
 pub(crate) struct Includes(pub(crate) Vec<Include>);
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -77,10 +77,10 @@ pub(crate) struct Inherit {
     pub(crate) name: String,
 }
 
-#[derive(Debug, Serialize, ProtoDeserializer)]
+#[derive(Debug, Serialize, ProtoDeserializer, Clone)]
 pub(crate) struct Inherits(pub(crate) Vec<Inherit>);
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
 pub(crate) struct Prototype {
     pub(crate) name: String,
     pub(crate) class: String,

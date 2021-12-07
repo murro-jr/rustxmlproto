@@ -11,7 +11,7 @@ use crate::value::{ObjectType, Visibility};
 pub(crate) struct ObjectWriter;
 
 impl ObjectWriter {
-    pub fn write(prototype: Prototype) -> std::io::Result<()> {
+    pub fn write(prototype: Prototype) -> std::io::Result<File> {
         let path = format!("./{}.rs", prototype.name.to_case(Case::Snake));
         let mut file = File::create(path)?;
 
@@ -60,8 +60,9 @@ impl ObjectWriter {
             Ok(ObjectType::STRUCT) => {
                 let mut output = StructFormatter::format(prototype.members.0);
                 output = output + "}";
-                output =
-                    output + "\n\n" + &ImplFormatter::format(prototype.name, prototype.functions.0);
+                output = output
+                    + "\n\n"
+                    + &ImplFormatter::format(prototype.name, prototype.functions.0, None);
                 file.write(output.as_bytes())?;
             }
             Ok(ObjectType::TRAIT) => {
@@ -72,6 +73,6 @@ impl ObjectWriter {
             Err(err) => panic!("Error parsing ObjectType: {}", err),
         };
 
-        Ok(())
+        Ok(file)
     }
 }
