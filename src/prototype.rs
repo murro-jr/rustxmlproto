@@ -70,6 +70,16 @@ pub(crate) struct Include {
 #[derive(Debug, Serialize, ProtoDeserializer)]
 pub(crate) struct Includes(pub(crate) Vec<Include>);
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub(crate) struct Inherit {
+    #[serde(skip_deserializing)]
+    pub(crate) class: String,
+    pub(crate) name: String,
+}
+
+#[derive(Debug, Serialize, ProtoDeserializer)]
+pub(crate) struct Inherits(pub(crate) Vec<Inherit>);
+
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub(crate) struct Prototype {
     pub(crate) name: String,
@@ -84,4 +94,7 @@ pub(crate) struct Prototype {
 
     #[serde(default)]
     pub(crate) includes: Includes,
+
+    #[serde(default)]
+    pub(crate) inherits: Inherits,
 }
