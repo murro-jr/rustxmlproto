@@ -1,7 +1,7 @@
 use convert_case::{Case, Casing};
 
-use crate::prototype::{Function, Include, Member};
-use crate::value::Visibility;
+use crate::prototype::{Function, Include, Member, ProcMacro};
+use crate::value::{CommonMacro, Visibility};
 
 pub(crate) struct EnumFormatter;
 
@@ -37,6 +37,8 @@ impl StructFormatter {
         let mut result = "".to_string();
 
         for member in members.iter() {
+            let procs = ProcFormatter::format(member.procs.0.to_vec(), true);
+            result = result + &procs;
             if let Some(datatype) = &member.datatype {
                 let contained = if let Some(container) = &member.container {
                     format!("{}<{}>", container, datatype)
@@ -208,6 +210,49 @@ impl IncludeFormatter {
                 result = result + "::{ " + &objects + " };\n";
             } else {
                 result = result + ";\n";
+            }
+        }
+
+        result
+    }
+}
+
+pub(crate) struct ProcFormatter;
+
+impl ProcFormatter {
+    pub fn format(procs: Vec<ProcMacro>, indented: bool) -> String {
+        let mut result = "".to_string();
+
+        for proc in procs {
+            let class = proc.class.parse::<CommonMacro>().unwrap();
+            let set = proc
+                .set
+                .map(|data| {
+                    if let Some(value) = proc.value {
+                        format!("({} = \"{}\")", data, value)
+                    } else {
+                        format!("({})", data)
+                    }
+                })
+                .unwrap_or("".to_string());
+
+            let output = match class {
+                CommonMacro::DERIVE | CommonMacro::SERDE => {
+                    format!("#[{}{}]\n", class.to_string(), set)
+                }
+                CommonMacro::CUSTOM => {
+                    if let Some(name) = proc.name {
+                        format!("#[{}{}]\n", name, set)
+                    } else {
+                        "".to_string()
+                    }
+                }
+            };
+
+            if indented {
+                result = result + "\t" + &output;
+            } else {
+                result = result + &output;
             }
         }
 

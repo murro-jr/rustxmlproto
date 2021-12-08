@@ -47,3 +47,33 @@ impl std::string::ToString for Visibility {
         }
     }
 }
+
+#[derive(PartialEq)]
+pub(crate) enum CommonMacro {
+    DERIVE,
+    SERDE,
+    CUSTOM,
+}
+
+impl std::str::FromStr for CommonMacro {
+    type Err = String;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "derive" => Ok(CommonMacro::DERIVE),
+            "serde" => Ok(CommonMacro::SERDE),
+            "custom" => Ok(CommonMacro::CUSTOM),
+            _ => panic!("'{}' is not supported as tag for macro", value),
+        }
+    }
+}
+
+impl std::string::ToString for CommonMacro {
+    fn to_string(&self) -> String {
+        match self {
+            Self::DERIVE => "derive".to_string(),
+            Self::SERDE => "serde".to_string(),
+            Self::CUSTOM => "".to_string(),
+        }
+    }
+}

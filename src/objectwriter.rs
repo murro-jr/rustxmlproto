@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::Write;
 
 use crate::formatter::{
-    EnumFormatter, ImplFormatter, IncludeFormatter, StructFormatter, TraitFormatter,
+    EnumFormatter, ImplFormatter, IncludeFormatter, ProcFormatter, StructFormatter, TraitFormatter,
 };
 use crate::prototype::Prototype;
 use crate::value::{ObjectType, Visibility};
@@ -17,6 +17,17 @@ impl ObjectWriter {
 
         let includes = IncludeFormatter::format(prototype.includes.0) + "\n";
         file.write(includes.as_bytes())?;
+
+        let object_type: Result<ObjectType, String> = prototype.class.parse();
+        match object_type {
+            Ok(ObjectType::ENUM) | Ok(ObjectType::STRUCT) => {
+                let procs = ProcFormatter::format(prototype.procs.0.to_vec(), false);
+                file.write(procs.as_bytes())?;
+            }
+            _ => {
+                println!("We don't have to do anything here.");
+            }
+        };
 
         match prototype.visibility {
             Some(visibility) => {
@@ -48,8 +59,6 @@ impl ObjectWriter {
                 file.write(object.as_bytes())?;
             }
         };
-
-        let object_type: Result<ObjectType, String> = prototype.class.parse();
 
         match object_type {
             Ok(ObjectType::ENUM) => {
