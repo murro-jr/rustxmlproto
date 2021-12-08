@@ -12,6 +12,7 @@ const FUNCTIONS: &str = "Functions";
 const MEMBERS: &str = "Members";
 const INCLUDES: &str = "Includes";
 const INHERITS: &str = "Inherits";
+const PROCMACROS: &str = "ProcMacros";
 
 fn impl_proto_deserialize(ast: &syn::DeriveInput) -> quote::Tokens {
     let name = &ast.ident;
@@ -67,6 +68,7 @@ fn get_vector_input(class: &String) -> syn::Ident {
         MEMBERS => syn::Ident::from("Member"),
         INCLUDES => syn::Ident::from("Include"),
         INHERITS => syn::Ident::from("Inherit"),
+        PROCMACROS => syn::Ident::from("ProcMacro"),
         _ => syn::Ident::from(""),
     }
 }
@@ -83,7 +85,7 @@ fn get_loop_body(class: &String) -> quote::Tokens {
                 params.push(value);
             }
         }
-        INCLUDES => {
+        INCLUDES | PROCMACROS => {
             quote! {
                 value.class = key;
                 params.push(value);

@@ -21,6 +21,24 @@ pub(crate) struct Parameter {
 pub(crate) struct Parameters(pub(crate) Vec<Parameter>);
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub(crate) struct ProcMacro {
+    #[serde(skip_deserializing)]
+    pub(crate) class: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) name: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) set: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) value: Option<String>,
+}
+
+#[derive(Debug, Serialize, ProtoDeserializer, Clone)]
+pub(crate) struct ProcMacros(pub(crate) Vec<ProcMacro>);
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub(crate) struct Function {
     pub(crate) name: String,
 
@@ -52,6 +70,9 @@ pub(crate) struct Member {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) container: Option<String>,
+
+    #[serde(default)]
+    pub(crate) procs: ProcMacros,
 }
 
 #[derive(Debug, Serialize, ProtoDeserializer, Clone)]
@@ -103,4 +124,7 @@ pub(crate) struct Prototype {
 
     #[serde(default)]
     pub(crate) inherits: Inherits,
+
+    #[serde(default)]
+    pub(crate) procs: ProcMacros,
 }
