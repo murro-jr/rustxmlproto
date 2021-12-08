@@ -37,7 +37,7 @@ fn main() {
     if let Ok(prototype) = prototype {
         println!("{:?}", prototype);
         let prototype = Preface::new(prototype).prepare();
-        let file = ObjectWriter::write(prototype.clone());
+        let file = ObjectWriter::write(prototype.clone(), args[2].clone());
 
         if let Ok(file) = file {
             InheritWriter::write(file, prototype).unwrap();

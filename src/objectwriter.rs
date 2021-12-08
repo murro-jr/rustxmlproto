@@ -11,8 +11,8 @@ use crate::value::{ObjectType, Visibility};
 pub(crate) struct ObjectWriter;
 
 impl ObjectWriter {
-    pub fn write(prototype: Prototype) -> std::io::Result<File> {
-        let path = format!("./{}.rs", prototype.name.to_case(Case::Snake));
+    pub fn write(prototype: Prototype, out_dir: String) -> std::io::Result<File> {
+        let path = format!("{}/{}.rs", out_dir, prototype.name.to_case(Case::Snake));
         let mut file = File::create(path)?;
 
         let includes = IncludeFormatter::format(prototype.includes.0) + "\n";
