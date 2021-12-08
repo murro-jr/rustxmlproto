@@ -1,0 +1,13 @@
+<prototype name="TestProto" class="struct" visibility="crate">
+    <includes>
+        <extern name="serde_derive" objects="Deserialize, Serialize"/>
+    </includes>
+    <procs>
+        <derive set="Debug, Serialize, Deserialize, Clone"/>
+    </procs>
+    <members>
+        <String name="name" visibility="external"/>
+        <String name="currentAddress" visibility="crate"/>
+        <i32 name="id"/>
+    </members>
+</prototype>
