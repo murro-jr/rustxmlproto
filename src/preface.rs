@@ -60,11 +60,11 @@ impl StructPreface {
                 },
             ];
 
-            let body = format!("self.{} = {};", member.name, member.name);
+            let body = format!("self.{} = {};\n\t\tself", member.name, member.name);
 
             functions.push(Function {
                 name,
-                datatype: None,
+                datatype: Some("Self".to_string()),
                 parameters: Some(Parameters(parameters)),
                 body: Some(body),
                 visibility: Some("crate".to_string()),
