@@ -82,6 +82,7 @@ fn get_loop_body(class: &String) -> quote::Tokens {
                 } else {
                     value.datatype = None;
                 }
+                value.name = value.name.to_case(Case::Snake);
                 params.push(value);
             }
         }

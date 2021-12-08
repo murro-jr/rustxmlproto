@@ -1,3 +1,4 @@
+use convert_case::{Case, Casing};
 use serde;
 use serde_derive::{Deserialize, Serialize};
 
