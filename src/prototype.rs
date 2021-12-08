@@ -12,6 +12,9 @@ pub(crate) struct Parameter {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) mutable: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) container: Option<String>,
 }
 
 #[derive(Debug, Serialize, ProtoDeserializer, Clone)]
@@ -46,6 +49,9 @@ pub(crate) struct Member {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) visibility: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) container: Option<String>,
 }
 
 #[derive(Debug, Serialize, ProtoDeserializer, Clone)]

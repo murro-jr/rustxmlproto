@@ -38,6 +38,12 @@ impl StructFormatter {
 
         for member in members.iter() {
             if let Some(datatype) = &member.datatype {
+                let contained = if let Some(container) = &member.container {
+                    format!("{}<{}>", container, datatype)
+                } else {
+                    datatype.clone()
+                };
+
                 let member = match &member.visibility {
                     Some(visibility) => {
                         let visibility: Visibility = visibility.parse().unwrap();
@@ -48,18 +54,18 @@ impl StructFormatter {
                                     "\tpub({}) {}: {},\n",
                                     visibility.to_string(),
                                     member.name,
-                                    datatype
+                                    contained
                                 )
                             }
                             Visibility::EXTERNAL => {
-                                format!("\tpub {}: {},\n", member.name, datatype)
+                                format!("\tpub {}: {},\n", member.name, contained)
                             }
                             Visibility::PRIVATE => {
-                                format!("\t{}: {},\n", member.name, datatype)
+                                format!("\t{}: {},\n", member.name, contained)
                             }
                         }
                     }
-                    None => format!("\t{}: {},\n", member.name, datatype),
+                    None => format!("\t{}: {},\n", member.name, contained),
                 };
 
                 result = result + &member;
@@ -109,14 +115,18 @@ impl FunctionFormatter {
                     _ => "",
                 };
 
-                if let Some(datatype) = &param.datatype {
-                    result = result + &format!("{}: {}{}, ", param.name, mutable, datatype);
+                if &param.name != "self" {
+                    let generic = "T".to_string();
+                    let datatype = param.datatype.as_ref().unwrap_or(&generic);
+                    let contained = param
+                        .container
+                        .as_ref()
+                        .map(|data| format!("{}<{}>", data, datatype))
+                        .unwrap_or(datatype.to_string());
+
+                    result = result + &format!("{}: {}{}, ", param.name, mutable, contained);
                 } else {
-                    if &param.name != "self" {
-                        result = result + &format!("{}: {}T, ", param.name, mutable);
-                    } else {
-                        result = result + &format!("{}self, ", mutable);
-                    }
+                    result = result + &format!("{}self, ", mutable);
                 }
             }
         }

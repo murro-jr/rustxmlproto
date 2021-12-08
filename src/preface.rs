@@ -24,6 +24,7 @@ impl StructPreface {
                 name: member.name.clone(),
                 datatype: member.datatype.clone(),
                 mutable: Some(false),
+                container: None,
             });
         }
 
@@ -49,11 +50,13 @@ impl StructPreface {
                     name: "self".to_string(),
                     datatype: None,
                     mutable: Some(true),
+                    container: None,
                 },
                 Parameter {
                     name: member.name.clone(),
                     datatype: member.datatype.clone(),
                     mutable: Some(false),
+                    container: None,
                 },
             ];
 
@@ -82,6 +85,7 @@ impl StructPreface {
                 name: "self".to_string(),
                 datatype: None,
                 mutable: Some(false),
+                container: None,
             }];
 
             functions.push(Function {
@@ -109,6 +113,7 @@ impl TraitPreface {
                 name: "self".to_string(),
                 datatype: None,
                 mutable: Some(false),
+                container: None,
             }];
 
             if let Some(params) = &function.parameters {
