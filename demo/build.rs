@@ -5,7 +5,7 @@ fn main() {
     assert!(input_file.is_ok());
     let input_file = input_file.unwrap();
 
-    let out_dir = std::env::var_os("OUT_DIR").unwrap();
+    let out_dir = std::env::var_os("PROTO_DIR").unwrap();
     let out_dir = out_dir.into_string();
     assert!(out_dir.is_ok());
 
